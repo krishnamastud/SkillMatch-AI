@@ -185,3 +185,38 @@ export const refreshTokenController = async (req, res) => {
     accessToken: newAccessToken,
   });
 };
+
+/**
+ * Google OAuth 2.0 Callback Controller
+ */
+
+export const googleOAuthCallbackController = async (req, res) => {
+    const user = req.user;
+    const email = user.emails[0].value;
+
+    const isUserExist = await userModel.findOne({ email });
+
+    if (isUserExist) {
+      // User exists, proceed with login
+      const refreshToken = generateTokens(isUserExist, "refresh");
+      await userModel.findByIdAndUpdate(isUserExist._id, { refreshToken });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+      });
+      return res.redirect("http://localhost:3000/");
+    }
+
+    // User does not exist, create a new user
+    const newUser = await userModel.create({
+      googleId: user.id,
+      email: email,
+      username: user.displayName,
+    });
+
+    const refreshToken = generateTokens(newUser, "refresh");
+    await userModel.findByIdAndUpdate(newUser._id, { refreshToken });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+    });
+    return res.redirect("http://localhost:3000/");
+  }

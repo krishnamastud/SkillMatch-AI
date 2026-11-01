@@ -21,10 +21,16 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: function() {
+            return !this.googleId;
+        },
         trim: true,
         minlength: [6, "Password must be at least 6 characters long"],
         maxlength: [100, "Password cannot exceed 100 characters"]
+    },
+    googleId: {
+        type: String,
+        default: null,
     },
     refreshToken: {
         type: String,

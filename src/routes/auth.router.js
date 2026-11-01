@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getMeController,
+  googleOAuthCallbackController,
   loginController,
   refreshTokenController,
   registerController,
@@ -10,6 +11,9 @@ import {
   registerValidationRules,
 } from "../validation/auth.validation.js";
 import { authenticate } from "../middleware/auth.middleware.js";
+import passport from "passport";
+import userModel from "../model/user.model.js";
+import { generateTokens } from "../utils/auth.utils.js";
 
 const router = express.Router();
 
@@ -40,5 +44,35 @@ router.get("/get-me", authenticate, getMeController);
  * @access Public
  */
 router.post("/refresh-token", refreshTokenController);
+
+/**
+ * @route GET /api/auth/google
+ * @description Initiate Google OAuth 2.0 authentication
+ * @access Public
+ */
+router.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    prompt: "select_account",
+    session: false,
+  }),
+);
+
+/*
+ * @route GET /api/auth/google/callback
+ * @description Handle Google OAuth 2.0 callback
+ * @access Public
+ */
+router.get('/google/callback',
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: "/",
+  }),
+  googleOAuthCallbackController
+);
+
+
+
 
 export default router;
