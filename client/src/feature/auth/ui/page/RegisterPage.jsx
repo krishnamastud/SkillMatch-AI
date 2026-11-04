@@ -1,33 +1,12 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { Command, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { useAuth } from "../../hook/useAuth";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    mode: "onTouched",
-  });
-
-  const onSubmit = async (data) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      console.log("Form Data:", data);
-      reset();
-    } catch (error) {
-      console.error("Registration error:", error);
-    }
-  };
-
-  const handleGoogleLogin = () => {
-    // window.location.href = "http://localhost:5000/api/auth/google";
-    console.log("Redirecting to Google OAuth...");
-  };
+  const { handleSubmit, register, errors, isSubmitting, handleRegister, handleGoogleLogin } = useAuth();
+  
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900 flex items-center justify-center p-4 selection:bg-zinc-200">
@@ -84,7 +63,7 @@ const RegisterPage = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        <form onSubmit={handleSubmit(handleRegister)} noValidate className="space-y-4">
           
           {/* Username */}
           <div>

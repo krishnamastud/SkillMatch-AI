@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Command, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { useAuth } from "../../hook/useAuth";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -8,32 +9,16 @@ const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    mode: "onTouched",
-  });
-
-  const onSubmit = async (data) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      console.log("Login Payload:", data);
-      reset();
-    } catch (error) {
-      console.error("Login error:", error);
-    }
-  };
-
-  const handleGoogleLogin = () => {
-    // window.location.href = "http://localhost:5000/api/auth/google";
-    console.log("Redirecting to Google OAuth...");
-  };
+    handleLogin,
+    errors,
+    isSubmitting,
+    handleGoogleLogin,
+  } = useAuth();
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900 flex items-center justify-center p-4 selection:bg-indigo-50 selection:text-indigo-600">
       {/* Surface Card */}
       <div className="w-full max-w-[400px] bg-white border border-zinc-200/80 rounded-2xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        
         {/* Brand Logo & Header */}
         <div className="flex flex-col items-center text-center mb-6">
           <div className="w-10 h-10 bg-zinc-900 text-white rounded-xl flex items-center justify-center mb-3 shadow-sm ring-1 ring-zinc-900/5">
@@ -84,8 +69,11 @@ const LoginPage = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-          
+        <form
+          onSubmit={handleSubmit(handleLogin)}
+          noValidate
+          className="space-y-4"
+        >
           {/* Email */}
           <div>
             <label
