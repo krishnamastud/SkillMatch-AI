@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import {useDispatch} from "react-redux";
-import { loginAction, registerAction } from "../api/authAction";
+import { loginAction, registerAction } from "../state/authAction";
 
 export const useAuth = () => {
   const {
@@ -35,11 +35,7 @@ export const useAuth = () => {
     }
   };
 
-//   handleGoogleLogin function to handle Google OAuth login
-  const handleGoogleLogin = () => {
-    // window.location.href = "http://localhost:5000/api/auth/google";
-    console.log("Redirecting to Google OAuth...");
-  };
+
 
 
   return {
@@ -49,6 +45,5 @@ export const useAuth = () => {
     isSubmitting,
     handleRegister,
     handleLogin,
-    handleGoogleLogin,
   };
 };

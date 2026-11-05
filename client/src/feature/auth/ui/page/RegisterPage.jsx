@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Command, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { useAuth } from "../../hook/useAuth";
+import { googleOAuth } from "../../api/authApi";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const { handleSubmit, register, errors, isSubmitting, handleRegister, handleGoogleLogin } = useAuth();
-  
+  const { handleSubmit, register, errors, isSubmitting, handleRegister } =
+    useAuth();
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900 flex items-center justify-center p-4 selection:bg-zinc-200">
       {/* Subtle Card Container */}
       <div className="w-full max-w-[400px] bg-white border border-zinc-200/80 rounded-2xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        
         {/* Brand Logo & Header */}
         <div className="flex flex-col items-center text-center mb-6">
           <div className="w-10 h-10 bg-zinc-900 text-white rounded-xl flex items-center justify-center mb-3 shadow-sm">
@@ -29,7 +29,7 @@ const RegisterPage = () => {
         {/* Google OAuth Button */}
         <button
           type="button"
-          onClick={handleGoogleLogin}
+          onClick={googleOAuth}
           className="w-full flex items-center justify-center gap-2.5 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-lg py-2.5 px-4 text-xs font-medium transition-all duration-150 shadow-2xs focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -63,8 +63,11 @@ const RegisterPage = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(handleRegister)} noValidate className="space-y-4">
-          
+        <form
+          onSubmit={handleSubmit(handleRegister)}
+          noValidate
+          className="space-y-4"
+        >
           {/* Username */}
           <div>
             <label

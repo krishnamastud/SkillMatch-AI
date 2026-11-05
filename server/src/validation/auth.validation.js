@@ -46,7 +46,12 @@ export const loginValidationRules = [
     .normalizeEmail({ gmail_remove_dots: false }),
 
   body("password")
-    .notEmpty().withMessage("Password is required"),
+    .notEmpty().withMessage("Password is required").bail()
+    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters long").bail()
+    .isLength({ max: 100 }).withMessage("Password cannot exceed 100 characters").bail()
+    // Optional: enforce complexity
+    .matches(/\d/).withMessage("Password must contain at least one number").bail()
+    .matches(/[A-Z]/).withMessage("Password must contain at least one uppercase letter"),
 
     (req, res, next) => {
     const errors = validationResult(req);

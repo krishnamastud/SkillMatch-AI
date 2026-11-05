@@ -1,19 +1,13 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { Command, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { useAuth } from "../../hook/useAuth";
+import { googleOAuth } from "../../api/authApi";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    handleLogin,
-    errors,
-    isSubmitting,
-    handleGoogleLogin,
-  } = useAuth();
+  const { register, handleSubmit, handleLogin, errors, isSubmitting } =
+    useAuth();
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900 flex items-center justify-center p-4 selection:bg-indigo-50 selection:text-indigo-600">
@@ -35,7 +29,7 @@ const LoginPage = () => {
         {/* Google OAuth Button */}
         <button
           type="button"
-          onClick={handleGoogleLogin}
+          onClick={googleOAuth}
           className="w-full flex items-center justify-center gap-2.5 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-lg py-2.5 px-4 text-xs font-medium transition-all duration-150 shadow-2xs focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">

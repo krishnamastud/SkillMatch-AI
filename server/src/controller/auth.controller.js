@@ -130,8 +130,6 @@ export const getMeController = async (req, res) => {
 export const refreshTokenController = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
-  console.log(refreshToken)
-
   if (!refreshToken) {
     return res.status(401).json({
       success: false,
@@ -203,7 +201,7 @@ export const googleOAuthCallbackController = async (req, res) => {
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
       });
-      return res.redirect("http://localhost:3000/");
+      return res.redirect("http://localhost:5173/dashboard?googleLogin=success");
     }
 
     // User does not exist, create a new user
@@ -218,5 +216,5 @@ export const googleOAuthCallbackController = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
     });
-    return res.redirect("http://localhost:3000/");
+    return res.redirect("http://localhost:5173/dashboard?googleLogin=success");
   }
