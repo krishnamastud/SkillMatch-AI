@@ -162,8 +162,13 @@ const RegisterPage = () => {
                 {...register("password", {
                   required: "Password is required",
                   minLength: {
-                    value: 8,
-                    message: "Must be at least 8 characters",
+                    value: 6,
+                    message: "Must be at least 6 characters",
+                  },
+                  pattern: {
+                    value: /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                    message:
+                      "Password must contain at least one uppercase letter, one number, and one special character",
                   },
                 })}
               />

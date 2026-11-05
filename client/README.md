@@ -18,7 +18,5 @@ If you are developing a production application, we recommend using TypeScript wi
 
 
 
-1 => manage error in register and login form
-2 => (# handle error on frontend)whien i enter wrong credential while registering show an message on frontend user already exist or invalid username or email
-3 => implement toastify
-4* => create logout api
+1 => create logout api
+2 => rapid refresh handle while refresh-token api call

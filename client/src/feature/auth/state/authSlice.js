@@ -31,6 +31,7 @@ const authSlice = createSlice({
       })
       .addCase("auth/register/rejected", (state, action) => {
         state.loading = false;
+        state.user = null;
         state.isAuthenticated = false;
         state.accessToken = null;
       })
@@ -53,6 +54,7 @@ const authSlice = createSlice({
       .addCase("auth/initialize/pending", (state) => {
         state.loading = true;
         state.isAuthenticated = false;
+        state.initialized = false;
       })
       .addCase("auth/initialize/fulfilled", (state, action) => {
         state.loading = false;
@@ -66,10 +68,12 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.accessToken = null;
         state.initialized = true;
+        state.user = null;
+        state.accessToken = null;
       });
   },
 });
 
-export const { loginStart, setAccessToken, setInitialized } = authSlice.actions;
+export const { loginStart, setAccessToken } = authSlice.actions;
 
 export default authSlice.reducer;

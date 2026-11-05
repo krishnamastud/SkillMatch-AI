@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
+        match: [/^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/, 
+        "Password must contain 6 characters with at least one uppercase letter and one special character"],
         required: function() {
             return !this.googleId;
         },

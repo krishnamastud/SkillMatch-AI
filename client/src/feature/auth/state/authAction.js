@@ -13,6 +13,9 @@ export const registerAction = createAsyncThunk(
       return data;
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
+      return rejectWithValue(
+        error.response?.data?.message || "Registration failed"
+      );
     }
   },
 );
@@ -29,6 +32,9 @@ export const loginAction = createAsyncThunk(
       return data;
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
+      return rejectWithValue(
+    error.response?.data?.message || "Login failed"
+  );
     }
   },
 );
@@ -38,6 +44,7 @@ export const initializeAaction = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const refreshTokenRes = await refreshToken();
+
       thunkAPI.dispatch(setAccessToken(refreshTokenRes.accessToken));
 
       const meRes = await getMe();
@@ -48,6 +55,9 @@ export const initializeAaction = createAsyncThunk(
       };
     } catch (error) {
       toast.error(error.response?.data?.message || "Initialization failed");
+      return rejectWithValue(
+        error.response?.data?.message || "Initialization failed"
+      );
     }
   },
 );
