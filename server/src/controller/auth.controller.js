@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import userModel from "../model/user.model.js";
 import { generateTokens, verifyToken } from "../utils/auth.utils.js";
+import { redis } from "../config/redis.js";
 
 /**
  * Register Controller
@@ -136,6 +137,15 @@ export const refreshTokenController = async (req, res) => {
       message: "Refresh token is required",
     });
   }
+  // Check if the refresh token is blacklisted in Redis
+  const isRefreshTokenBlacklisted = await redis.get(`blacklist:${refreshToken}`);
+
+  if (isRefreshTokenBlacklisted) {
+    return res.status(403).json({
+      success: false,
+      message: "Refresh token is blacklisted",
+    });
+  }
 
   const decoded = verifyToken(refreshToken, "refresh");
 
@@ -187,34 +197,73 @@ export const refreshTokenController = async (req, res) => {
 /**
  * Google OAuth 2.0 Callback Controller
  */
-
 export const googleOAuthCallbackController = async (req, res) => {
-    const user = req.user;
-    const email = user.emails[0].value;
+  const user = req.user;
+  const email = user.emails[0].value;
 
-    const isUserExist = await userModel.findOne({ email });
+  const isUserExist = await userModel.findOne({ email });
 
-    if (isUserExist) {
-      // User exists, proceed with login
-      const refreshToken = generateTokens(isUserExist, "refresh");
-      await userModel.findByIdAndUpdate(isUserExist._id, { refreshToken });
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-      });
-      return res.redirect("http://localhost:5173/dashboard?googleLogin=success");
-    }
-
-    // User does not exist, create a new user
-    const newUser = await userModel.create({
-      googleId: user.id,
-      email: email,
-      username: user.displayName,
-    });
-
-    const refreshToken = generateTokens(newUser, "refresh");
-    await userModel.findByIdAndUpdate(newUser._id, { refreshToken });
+  if (isUserExist) {
+    // User exists, proceed with login
+    const refreshToken = generateTokens(isUserExist, "refresh");
+    await userModel.findByIdAndUpdate(isUserExist._id, { refreshToken });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
     });
     return res.redirect("http://localhost:5173/dashboard?googleLogin=success");
   }
+
+  // User does not exist, create a new user
+  const newUser = await userModel.create({
+    googleId: user.id,
+    email: email,
+    username: user.displayName,
+  });
+
+  const refreshToken = generateTokens(newUser, "refresh");
+  await userModel.findByIdAndUpdate(newUser._id, { refreshToken });
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+  });
+  return res.redirect("http://localhost:5173/dashboard?googleLogin=success");
+};
+
+/**
+ * Logout Controller
+ * @description Logout the current user and blacklist the refresh token in Redis
+ * @access Public
+ */
+export const logoutController = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(200).json({
+      success: true,
+      message: "User already logged out",
+    });
+  }
+
+  const user = await userModel.findOne({
+    refreshToken,
+  });
+
+  if (user) {
+    // Blacklist refresh token until its normal expiry
+    await redis.set(
+      `blacklist:${refreshToken}`,
+      "true",
+      "EX",
+      7 * 24 * 60 * 60
+    );
+
+    user.refreshToken = null;
+    await user.save();
+  }
+
+  res.clearCookie("refreshToken");
+
+  return res.status(200).json({
+    success: true,
+    message: "User logged out successfully",
+  });
+};

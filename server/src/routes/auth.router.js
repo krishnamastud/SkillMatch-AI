@@ -5,6 +5,7 @@ import {
   loginController,
   refreshTokenController,
   registerController,
+  logoutController,
 } from "../controller/auth.controller.js";
 import {
   loginValidationRules,
@@ -14,6 +15,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import passport from "passport";
 import userModel from "../model/user.model.js";
 import { generateTokens } from "../utils/auth.utils.js";
+import { redis as redisClient } from "../config/redis.js";
 
 const router = express.Router();
 
@@ -59,7 +61,7 @@ router.get(
   }),
 );
 
-/*
+/**
  * @route GET /api/auth/google/callback
  * @description Handle Google OAuth 2.0 callback
  * @access Public
@@ -73,6 +75,12 @@ router.get('/google/callback',
 );
 
 
+/**
+ * @route POST /api/auth/logout
+ * @description Logout the current user and blacklist the refresh token in Redis
+ * @access public
+ */
+router.post("/logout", logoutController);
 
 
 export default router;
